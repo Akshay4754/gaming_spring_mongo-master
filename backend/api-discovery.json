@@ -1,0 +1,286 @@
+{
+  "backend_analysis": {
+    "application_name": "ecomsystem",
+    "spring_boot_version": "3.5.5",
+    "java_version": "21",
+    "database": "MongoDB",
+    "base_url": "http://localhost:8080",
+    "security_note": "No authentication/authorization implemented in backend - will need mock auth for frontend"
+  },
+  "models": {
+    "Member": {
+      "collection": "members",
+      "fields": {
+        "id": "String (MongoDB ObjectId)",
+        "name": "String (required, non-empty)",
+        "phoneNumber": "String (required, exactly 10 digits)",
+        "email": "String",
+        "balance": "double (non-negative)",
+        "joiningDate": "Date",
+        "isActive": "boolean"
+      }
+    },
+    "Game": {
+      "collection": "games",
+      "fields": {
+        "id": "String (MongoDB ObjectId)",
+        "name": "String",
+        "price": "double (non-negative)",
+        "description": "String",
+        "genre": "String",
+        "status": "String"
+      }
+    },
+    "Product": {
+      "collection": "products",
+      "fields": {
+        "id": "String (MongoDB ObjectId)",
+        "name": "String",
+        "description": "String",
+        "category": "String",
+        "tags": "String",
+        "price": "float",
+        "stock": "int"
+      }
+    },
+    "Recharge": {
+      "collection": "recharges",
+      "fields": {
+        "id": "String (MongoDB ObjectId)",
+        "memberId": "String (required)",
+        "amount": "double (positive)",
+        "paymentMethod": "String",
+        "date": "Date"
+      }
+    },
+    "Transaction": {
+      "collection": "transactions",
+      "fields": {
+        "id": "String (MongoDB ObjectId)",
+        "memberId": "String",
+        "gameId": "String",
+        "amount": "double",
+        "date": "Date"
+      }
+    }
+  },
+  "endpoints": {
+    "members": {
+      "base_path": "/members",
+      "operations": {
+        "POST /members": {
+          "description": "Create a new member",
+          "request_body": "Member (without id)",
+          "response": "Member (201 Created)",
+          "validation": ["name required", "phoneNumber exactly 10 digits", "balance non-negative"]
+        },
+        "GET /members": {
+          "description": "Get all members",
+          "response": "List<Member> (200 OK)"
+        },
+        "GET /members/{id}": {
+          "description": "Get member by ID",
+          "path_params": {"id": "String"},
+          "response": "Member (200 OK) or 404 Not Found"
+        },
+        "PUT /members/{id}": {
+          "description": "Update member by ID",
+          "path_params": {"id": "String"},
+          "request_body": "Member",
+          "response": "Member (200 OK) or 404 Not Found"
+        },
+        "DELETE /members/{id}": {
+          "description": "Delete member by ID",
+          "path_params": {"id": "String"},
+          "response": "204 No Content or 404 Not Found"
+        },
+        "POST /members/search": {
+          "description": "Search member profile by phone number",
+          "request_body": "SearchRequestDto {phone: String}",
+          "response": "MemberProfileDto (200 OK) or 404 Not Found"
+        }
+      }
+    },
+    "games": {
+      "base_path": "/games",
+      "operations": {
+        "POST /games": {
+          "description": "Create a new game",
+          "request_body": "Game (without id)",
+          "response": "Game (201 Created)",
+          "validation": ["price non-negative"]
+        },
+        "GET /games": {
+          "description": "Get all games",
+          "response": "List<Game> (200 OK)"
+        },
+        "GET /games/{id}": {
+          "description": "Get game by ID",
+          "path_params": {"id": "String"},
+          "response": "Game (200 OK) or 404 Not Found"
+        },
+        "PUT /games/{id}": {
+          "description": "Update game by ID",
+          "path_params": {"id": "String"},
+          "request_body": "Game",
+          "response": "Game (200 OK) or 404 Not Found"
+        },
+        "DELETE /games/{id}": {
+          "description": "Delete game by ID",
+          "path_params": {"id": "String"},
+          "response": "204 No Content or 404 Not Found"
+        }
+      }
+    },
+    "products": {
+      "base_path": "/products",
+      "operations": {
+        "POST /products": {
+          "description": "Create a new product",
+          "request_body": "Product (without id)",
+          "response": "Product (201 Created)"
+        },
+        "GET /products": {
+          "description": "Get all products",
+          "response": "List<Product> (200 OK)"
+        },
+        "GET /products/{id}": {
+          "description": "Get product by ID",
+          "path_params": {"id": "String"},
+          "response": "Product (200 OK) or 404 Not Found"
+        },
+        "PUT /products/{id}": {
+          "description": "Update product by ID",
+          "path_params": {"id": "String"},
+          "request_body": "Product",
+          "response": "Product (200 OK) or 404 Not Found"
+        },
+        "DELETE /products/{id}": {
+          "description": "Delete product by ID",
+          "path_params": {"id": "String"},
+          "response": "204 No Content or 404 Not Found"
+        }
+      }
+    },
+    "recharges": {
+      "base_path": "/recharges",
+      "operations": {
+        "POST /recharges": {
+          "description": "Create a new recharge (automatically updates member balance)",
+          "request_body": "Recharge (without id)",
+          "response": "Recharge (201 Created)",
+          "validation": ["amount positive", "memberId must exist"],
+          "business_logic": "Updates member balance automatically"
+        },
+        "GET /recharges": {
+          "description": "Get all recharges",
+          "response": "List<Recharge> (200 OK)"
+        },
+        "GET /recharges/member/{memberId}": {
+          "description": "Get recharges for specific member",
+          "path_params": {"memberId": "String"},
+          "response": "List<Recharge> (200 OK)"
+        }
+      }
+    },
+    "transactions": {
+      "base_path": "/transactions",
+      "operations": {
+        "POST /transactions": {
+          "description": "Create a new transaction",
+          "request_body": "Transaction (without id)",
+          "response": "Transaction (201 Created)"
+        },
+        "GET /transactions": {
+          "description": "Get all transactions",
+          "response": "List<Transaction> (200 OK)"
+        },
+        "GET /transactions/member/{memberId}": {
+          "description": "Get transactions for specific member",
+          "path_params": {"memberId": "String"},
+          "response": "List<Transaction> (200 OK)"
+        }
+      }
+    }
+  },
+  "dto_structures": {
+    "MemberDto": {
+      "fields": {
+        "id": "String",
+        "name": "String",
+        "phoneNumber": "String",
+        "email": "String",
+        "balance": "double",
+        "joiningDate": "Date",
+        "isActive": "boolean"
+      }
+    },
+    "GameDto": {
+      "fields": {
+        "id": "String",
+        "name": "String",
+        "price": "double",
+        "description": "String"
+      }
+    },
+    "RechargeDto": {
+      "fields": {
+        "id": "String",
+        "amount": "double",
+        "dateTime": "Date"
+      }
+    },
+    "PlayedHistoryDto": {
+      "fields": {
+        "id": "String",
+        "date_time": "Date",
+        "game_name": "String",
+        "amount": "double"
+      }
+    },
+    "MemberProfileDto": {
+      "fields": {
+        "member": "MemberDto",
+        "recharge_history": "List<RechargeDto>",
+        "games": "List<GameDto>",
+        "played_history": "List<PlayedHistoryDto>"
+      }
+    },
+    "SearchRequestDto": {
+      "fields": {
+        "phone": "String"
+      }
+    }
+  },
+  "business_rules": {
+    "member_validation": {
+      "name": "Cannot be empty",
+      "phoneNumber": "Must be exactly 10 digits",
+      "balance": "Cannot be negative"
+    },
+    "game_validation": {
+      "price": "Cannot be negative"
+    },
+    "recharge_validation": {
+      "amount": "Must be positive",
+      "memberId": "Must reference existing member",
+      "auto_balance_update": "Member balance is automatically increased by recharge amount"
+    }
+  },
+  "missing_features": {
+    "authentication": "No login/logout endpoints - need mock auth",
+    "authorization": "No role-based access control - need frontend role management",
+    "game_purchase": "No direct game purchase endpoint - transactions are separate",
+    "product_purchase": "No product purchase flow - need to implement",
+    "payment_integration": "No real payment processing - recharge is just balance update",
+    "admin_endpoints": "No admin-specific endpoints - all CRUD available to all"
+  },
+  "frontend_requirements": {
+    "mock_auth": "Implement mock authentication with USER/ADMIN roles",
+    "role_based_routing": "Protect admin routes, allow user access to own data",
+    "game_purchase_flow": "Create transaction when user 'buys' a game",
+    "product_purchase_flow": "Implement product purchase with transaction creation",
+    "balance_management": "Show current balance, recharge history, transaction history",
+    "admin_dashboard": "CRUD operations for games/products, member management"
+  }
+}
