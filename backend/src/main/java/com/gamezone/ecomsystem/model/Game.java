@@ -48,6 +48,17 @@ public class Game {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    // Constructors
+    public Game() {}
+
+    public Game(String name, double price, String description, String genre, String platform) {
+        this.name = name;
+        this.price = price;
+        this.description = description;
+        this.genre = genre;
+        this.platform = platform;
+    }
+
     // Getters and Setters
     public String getId() {
         return id;

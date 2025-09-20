@@ -10,6 +10,6 @@ import com.gamezone.ecomsystem.model.Member;
 public interface MemberRepository extends MongoRepository<Member, String> {
 	Optional<Member> findByPhoneNumber(String phoneNumber);
 	Optional<Member> findByEmail(String email);
-	List<Member> findByIsActive(boolean isActive);
+	List<Member> findByActive(boolean active);
 	List<Member> findByNameContainingIgnoreCase(String name);
 }

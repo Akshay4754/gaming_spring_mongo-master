@@ -1,6 +1,8 @@
 package com.gamezone.ecomsystem.controller;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gamezone.ecomsystem.dto.MemberProfileDto;
 import com.gamezone.ecomsystem.dto.SearchRequestDto;
+import com.gamezone.ecomsystem.dto.UserLoginRequest;
 import com.gamezone.ecomsystem.model.Member;
 import com.gamezone.ecomsystem.service.MemberService;
 import jakarta.validation.Valid;
@@ -63,6 +66,32 @@ public class MemberController {
     public ResponseEntity<MemberProfileDto> searchMemberByPhone(@RequestBody SearchRequestDto searchRequest) {
         MemberProfileDto profile = service.getMemberProfileByPhone(searchRequest.getPhone());
         return ResponseEntity.ok(profile);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, Object>> login(@Valid @RequestBody UserLoginRequest loginRequest) {
+        try {
+            Member member = service.findByEmail(loginRequest.getEmail());
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Login successful");
+            response.put("user", Map.of(
+                "id", member.getId(),
+                "name", member.getName(),
+                "email", member.getEmail(),
+                "phoneNumber", member.getPhoneNumber(),
+                "balance", member.getBalance(),
+                "role", member.getRole()
+            ));
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Invalid email");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
     }
     
 }

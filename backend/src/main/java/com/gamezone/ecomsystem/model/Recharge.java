@@ -14,6 +14,16 @@ public class Recharge {
     private String paymentMethod;
     private Date date;
 
+    // Constructors
+    public Recharge() {}
+
+    public Recharge(String memberId, double amount, String paymentMethod, Date date) {
+        this.memberId = memberId;
+        this.amount = amount;
+        this.paymentMethod = paymentMethod;
+        this.date = date;
+    }
+
     // Getters and Setters
     public String getId() {
         return id;

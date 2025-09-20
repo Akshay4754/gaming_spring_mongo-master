@@ -32,7 +32,7 @@ public class Member {
     private double balance = 0.0; // Default balance
     
     private Date joiningDate = new Date(); // Default to current date
-    private boolean isActive = true; // Default to active
+    private boolean active = true; // Default to active
     
     private String address; // Add address field
     private String city; // Add city field
@@ -42,6 +42,8 @@ public class Member {
     private String country = "India"; // Default country
     
     private String gender; // Add gender field
+    
+    private String role = "USER"; // Default role for members
     
     private Date dateOfBirth; // Add date of birth
     private String profileImageUrl; // Add profile image URL
@@ -88,10 +90,10 @@ public class Member {
         this.joiningDate = joiningDate;
     }
     public boolean isActive() {
-        return isActive;
+        return active;
     }
-    public void setActive(boolean isActive) {
-        this.isActive = isActive;
+    public void setActive(boolean active) {
+        this.active = active;
     }
     
     public String getAddress() {
@@ -172,5 +174,13 @@ public class Member {
     
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+    
+    public String getRole() {
+        return role;
+    }
+    
+    public void setRole(String role) {
+        this.role = role;
     }
 }

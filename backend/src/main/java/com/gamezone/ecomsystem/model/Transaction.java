@@ -14,6 +14,16 @@ public class Transaction {
     private double amount;
     private Date date;
 
+    // Constructors
+    public Transaction() {}
+
+    public Transaction(String memberId, String gameId, double amount, Date date) {
+        this.memberId = memberId;
+        this.gameId = gameId;
+        this.amount = amount;
+        this.date = date;
+    }
+
     // Getters and Setters
     public String getId() {
         return id;

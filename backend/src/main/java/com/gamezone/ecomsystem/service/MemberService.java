@@ -51,6 +51,9 @@ public class MemberService {
         if (member.getGender() == null || member.getGender().trim().isEmpty()) {
             member.setGender("OTHER");
         }
+        if (!member.isActive()) {
+            member.setActive(true);
+        }
         
         validate(member);
         Member savedMember = repo.save(member);
@@ -69,6 +72,15 @@ public class MemberService {
                 .orElseThrow(() -> {
                     log.error("Attempted to find non-existing member id: {}", id);
                     return new ResourceNotFoundException("Member not found with id: " + id);
+                });
+    }
+
+    public Member findByEmail(String email) {
+        log.info("Finding member by email: {}", email);
+        return repo.findByEmail(email)
+                .orElseThrow(() -> {
+                    log.error("Attempted to find non-existing member email: {}", email);
+                    return new ResourceNotFoundException("Member not found with email: " + email);
                 });
     }
 

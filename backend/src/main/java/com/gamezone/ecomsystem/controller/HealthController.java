@@ -11,7 +11,6 @@ import java.util.Map;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/api")
 public class HealthController {
 
     @GetMapping("/health")
@@ -24,7 +23,26 @@ public class HealthController {
         return response;
     }
 
-    @GetMapping("/test")
+    @GetMapping("/")
+    public Map<String, Object> root() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "GameZone E-commerce API");
+        response.put("status", "UP");
+        response.put("timestamp", LocalDateTime.now());
+        response.put("version", "1.0.0");
+        response.put("endpoints", new String[]{
+            "/api/health",
+            "/api/test", 
+            "/games",
+            "/members",
+            "/products",
+            "/recharges",
+            "/transactions"
+        });
+        return response;
+    }
+
+    @GetMapping("/api/test")
     public Map<String, String> test() {
         Map<String, String> response = new HashMap<>();
         response.put("message", "API is working!");
