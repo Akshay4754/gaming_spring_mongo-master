@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  GamepadIcon, 
+  CommandLineIcon, 
   CubeIcon, 
   UserGroupIcon, 
   CurrencyDollarIcon,
@@ -43,7 +43,7 @@ export const Home: React.FC = () => {
 
   const features = [
     {
-      icon: GamepadIcon,
+      icon: CommandLineIcon,
       title: 'Extensive Game Library',
       description: 'Access thousands of games across all genres and platforms.',
     },
@@ -88,7 +88,7 @@ export const Home: React.FC = () => {
                 to="/games"
                 className="bg-white text-indigo-600 px-8 py-3 rounded-2xl font-semibold hover:bg-gray-100 transition-colors duration-200 flex items-center justify-center gap-2"
               >
-                <GamepadIcon className="w-5 h-5" />
+                <CommandLineIcon className="w-5 h-5" />
                 Browse Games
               </Link>
               <Link

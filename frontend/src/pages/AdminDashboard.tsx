@@ -7,7 +7,7 @@ import { useTransactions } from '../hooks/useTransactions';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { 
   UserGroupIcon,
-  GamepadIcon,
+  CommandLineIcon,
   CurrencyDollarIcon,
   ShoppingCartIcon,
   ArrowTrendingUpIcon,
@@ -33,7 +33,7 @@ export const AdminDashboard: React.FC = () => {
       title: 'Manage Games',
       description: 'Add, edit, or remove games from the catalog',
       href: '/admin/games',
-      icon: GamepadIcon,
+      icon: CommandLineIcon,
       color: 'bg-blue-100 text-blue-600',
     },
     {
@@ -94,7 +94,7 @@ export const AdminDashboard: React.FC = () => {
           <div className="card">
             <div className="flex items-center">
               <div className="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center">
-                <GamepadIcon className="w-6 h-6 text-green-600" />
+                <CommandLineIcon className="w-6 h-6 text-green-600" />
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Games</p>
@@ -214,7 +214,7 @@ export const AdminDashboard: React.FC = () => {
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                  <GamepadIcon className="w-8 h-8 text-purple-600" />
+                  <CommandLineIcon className="w-8 h-8 text-purple-600" />
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-1">Games Available</h3>
                 <p className="text-sm text-gray-600">{games?.length || 0} games</p>

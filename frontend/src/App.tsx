@@ -1,18 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 
+// User type
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  phoneNumber?: string;
+  balance?: number;
+  username?: string;
+}
+
 // Auth Context
-const AuthContext = React.createContext({
+const AuthContext = React.createContext<{
+  user: User | null;
+  isAuthenticated: boolean;
+  login: (credentials: any) => Promise<boolean>;
+  logout: () => void;
+  isLoading: boolean;
+}>({
   user: null,
   isAuthenticated: false,
-  login: () => {},
+  login: async () => false,
   logout: () => {},
   isLoading: false
 });
 
 // Auth Provider
-const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -26,7 +43,7 @@ const AuthProvider = ({ children }) => {
     setIsLoading(false);
   }, []);
 
-  const login = async (credentials) => {
+  const login = async (credentials: any) => {
     setIsLoading(true);
     try {
       // Try admin login first
@@ -107,7 +124,7 @@ const AuthProvider = ({ children }) => {
 };
 
 // Protected Route Component
-const ProtectedRoute = ({ children, requiredRole }) => {
+const ProtectedRoute = ({ children, requiredRole }: { children: React.ReactNode; requiredRole?: string }) => {
   const { isAuthenticated, user, isLoading } = React.useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -168,10 +185,25 @@ const Home = () => {
   );
 };
 
+// Game type
+interface Game {
+  id: string;
+  name: string;
+  price: number;
+  description: string;
+  genre: string;
+  imageUrl?: string;
+  platform?: string;
+}
+
 // Games component
 const Games = () => {
-  const [games, setGames] = useState([]);
+  const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
+  const [purchasing, setPurchasing] = useState<string | null>(null);
+  const [purchaseMessage, setPurchaseMessage] = useState('');
+
+  const { user } = React.useContext(AuthContext);
 
   useEffect(() => {
     // Fetch games from backend
@@ -192,10 +224,68 @@ const Games = () => {
       });
   }, []);
 
+  const handleBuyGame = async (game: Game) => {
+    if (!user) {
+      setPurchaseMessage('Please login to purchase games');
+      return;
+    }
+
+    if (user.role !== 'USER') {
+      setPurchaseMessage('Only users can purchase games');
+      return;
+    }
+
+    try {
+      setPurchasing(game.id);
+      setPurchaseMessage('');
+
+      const response = await fetch('http://localhost:8080/transactions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          memberId: user.id,
+          gameId: game.id,
+          amount: game.price
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Purchase failed');
+      }
+
+      const result = await response.json();
+      setPurchaseMessage('Game purchased successfully!');
+      
+      // Update user balance if available
+      if (user.balance !== undefined) {
+        user.balance -= game.price;
+      }
+      
+    } catch (err: any) {
+      setPurchaseMessage(`Purchase failed: ${err.message}`);
+      console.error('Purchase error:', err);
+    } finally {
+      setPurchasing(null);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Games</h1>
+
+        {purchaseMessage && (
+          <div className={`mb-6 p-4 rounded-lg ${
+            purchaseMessage.includes('successfully') 
+              ? 'bg-green-100 text-green-800 border border-green-200' 
+              : 'bg-red-100 text-red-800 border border-red-200'
+          }`}>
+            {purchaseMessage}
+          </div>
+        )}
         
         {loading ? (
           <div className="flex justify-center py-12">
@@ -212,7 +302,13 @@ const Games = () => {
                 <p className="text-gray-600 text-sm mb-4">{game.description}</p>
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-bold text-indigo-600">${game.price}</span>
-                  <button className="btn-primary">Buy Now</button>
+                  <button 
+                    onClick={() => handleBuyGame(game)}
+                    disabled={purchasing === game.id}
+                    className={`btn-primary ${purchasing === game.id ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    {purchasing === game.id ? 'Purchasing...' : 'Buy Now'}
+                  </button>
                 </div>
               </div>
             ))}

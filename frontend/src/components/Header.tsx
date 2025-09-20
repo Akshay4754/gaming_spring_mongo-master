@@ -8,7 +8,7 @@ import {
   ShoppingCartIcon,
   MagnifyingGlassIcon,
   HomeIcon,
-  GamepadIcon,
+  CommandLineIcon,
   CubeIcon,
   Cog6ToothIcon,
   ArrowRightOnRectangleIcon
@@ -28,13 +28,13 @@ export const Header: React.FC = () => {
 
   const navigation = [
     { name: 'Home', href: '/', icon: HomeIcon },
-    { name: 'Games', href: '/games', icon: GamepadIcon },
+    { name: 'Games', href: '/games', icon: CommandLineIcon },
     { name: 'Products', href: '/products', icon: CubeIcon },
   ];
 
   const adminNavigation = [
     { name: 'Dashboard', href: '/admin', icon: Cog6ToothIcon },
-    { name: 'Games', href: '/admin/games', icon: GamepadIcon },
+    { name: 'Games', href: '/admin/games', icon: CommandLineIcon },
     { name: 'Products', href: '/admin/products', icon: CubeIcon },
     { name: 'Members', href: '/admin/members', icon: UserIcon },
     { name: 'Recharges', href: '/admin/recharges', icon: ShoppingCartIcon },

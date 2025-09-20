@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useGame } from '../hooks/useGames';
+import { useAuth } from '../contexts/AuthContext';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { 
   ArrowLeftIcon,
@@ -14,6 +15,57 @@ import {
 export const GameDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data: game, isLoading, error } = useGame(id!);
+  const { user } = useAuth();
+  const [purchasing, setPurchasing] = useState(false);
+  const [purchaseMessage, setPurchaseMessage] = useState('');
+
+  const handleBuyGame = async (game: any) => {
+    if (!user) {
+      setPurchaseMessage('Please login to purchase games');
+      return;
+    }
+
+    if (user.role !== 'USER') {
+      setPurchaseMessage('Only users can purchase games');
+      return;
+    }
+
+    try {
+      setPurchasing(true);
+      setPurchaseMessage('');
+
+      const response = await fetch('http://localhost:8080/transactions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          memberId: user.id,
+          gameId: game.id,
+          amount: game.price
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Purchase failed');
+      }
+
+      const result = await response.json();
+      setPurchaseMessage('Game purchased successfully!');
+      
+      // Update user balance if available
+      if (user.balance !== undefined) {
+        user.balance -= game.price;
+      }
+      
+    } catch (err: any) {
+      setPurchaseMessage(`Purchase failed: ${err.message}`);
+      console.error('Purchase error:', err);
+    } finally {
+      setPurchasing(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -48,6 +100,16 @@ export const GameDetail: React.FC = () => {
           <ArrowLeftIcon className="w-4 h-4" />
           Back to Games
         </Link>
+
+        {purchaseMessage && (
+          <div className={`mb-6 p-4 rounded-lg ${
+            purchaseMessage.includes('successfully') 
+              ? 'bg-green-100 text-green-800 border border-green-200' 
+              : 'bg-red-100 text-red-800 border border-red-200'
+          }`}>
+            {purchaseMessage}
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Game Image */}
@@ -134,9 +196,15 @@ export const GameDetail: React.FC = () => {
 
             {/* Purchase Button */}
             <div className="pt-6 border-t border-gray-200">
-              <button className="w-full btn-primary flex items-center justify-center gap-2 text-lg py-4">
+              <button 
+                onClick={() => handleBuyGame(game)}
+                disabled={purchasing}
+                className={`w-full btn-primary flex items-center justify-center gap-2 text-lg py-4 ${
+                  purchasing ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+              >
                 <ShoppingCartIcon className="w-6 h-6" />
-                Purchase Game - ${game.price.toFixed(2)}
+                {purchasing ? 'Purchasing...' : `Purchase Game - $${game.price.toFixed(2)}`}
               </button>
               <p className="text-sm text-gray-500 text-center mt-2">
                 Secure payment • Instant download • 30-day money-back guarantee

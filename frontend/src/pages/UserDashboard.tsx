@@ -13,7 +13,7 @@ import {
   ShoppingCartIcon,
   ClockIcon,
   PlusIcon,
-  GamepadIcon
+  CommandLineIcon
 } from '@heroicons/react/24/outline';
 
 export const UserDashboard: React.FC = () => {
@@ -101,7 +101,7 @@ export const UserDashboard: React.FC = () => {
           <div className="card">
             <div className="flex items-center">
               <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
-                <GamepadIcon className="w-6 h-6 text-blue-600" />
+                <CommandLineIcon className="w-6 h-6 text-blue-600" />
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Games Owned</p>
